@@ -6,7 +6,6 @@ import os
 # Init app
 app = Flask(__name__)
 basedir = os.path.join(os.path.dirname(__file__))
-
 # Database config
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -102,7 +101,6 @@ def delete_product(id):
     db.session.delete(product)
     db.session.commit()
     return jsonify({"Deleted Product": f"<id: {product.id}>, name: {product.name}"})
-
 
 
 if __name__ == '__main__':
