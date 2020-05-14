@@ -52,5 +52,4 @@ class TestStandardDeviation(unittest.TestCase):
     def test_standard_deviation_best_case(self):
         n = [2, 2, 3, 2, 2, 2, 3]
         std_dev = standard_deviation(*n, decimals=3)
-        print(f'Std dev: {std_dev}')
         assert std_dev == round_off(0.45189210, decimals=3)
