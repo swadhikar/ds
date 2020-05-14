@@ -19,7 +19,7 @@ def download(url, get_content=False, get_json=False, outfile=None):
 
 def download_images(url, download_path):
     content = download(url)
-    process = []
+    process_list = []
 
     # Fetch all images
     soup = BeautifulSoup(content, HTML_PARSER)
@@ -31,27 +31,31 @@ def download_images(url, download_path):
         img = a_tag.find('img').attrs['src']
         img_srcs.append(img[2:])
 
+    # print(f'Downloading sequentially ...')
+    # for img_src in img_srcs:
+    #     filename = join(download_path, basename(img_src))
+    #     _download_image_as_file(img_src, filename)
+
     print(f'Distributing image downloads across {cpu_count()} CPUs ...')
     for img_src in img_srcs:
-        img_content = download('https://' + img_src, get_content=True)
         filename = join(download_path, basename(img_src))
-
-        proc = multiprocessing.Process(
+        process = multiprocessing.Process(
             target=_download_image_as_file,
-            args=(img_content, filename)
+            args=(img_src, filename)
         )
-        proc.start()
-        process.append(proc)
+        process.start()
+        process_list.append(process)
 
-    for proc in process:
-        proc.join()
+    # Wait for process completion
+    for process in process_list:
+        process.join()
 
 
-def _download_image_as_file(content, filename):
+def _download_image_as_file(img_src, filename):
     try:
+        img_content = download('https://' + img_src, get_content=True)
         with open(filename, 'wb') as f:
-            # print(f'Writing image file: {basename(filename)}')
-            f.write(content)
+            f.write(img_content)
     except OSError as os_err:
         if os_err.errno == 36:
             print(f'Huge file name. Failed to write: {filename}')
